@@ -84,7 +84,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
 
 router.post("/user/login", async (req, res) => {
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
     }

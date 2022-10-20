@@ -160,7 +160,55 @@ router.delete("/offer/delete/:offerId", isAuthenticated, async (req, res) => {
     const offerId = req.params.offerId;
     await Offer.findByIdAndDelete(offerId);
     res.status(200).json({ message: "Offer deleted" });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+});
+
+router.get("/offer/:id", async (req, res) => {
+  try {
+    offerId = req.params.id;
+    const offerToFind = await Offer.findById(offerId);
+    res.status(200).json(offerToFind);
   } catch (error) {}
+});
+
+router.get("/offers", async (req, res) => {
+  try {
+    const { title, priceMin, priceMax, sort, page } = req.query;
+    const regExp = new RegExp(title, "i");
+    if (sort !== "price-desc" && sort !== "price-asc") {
+      return res.json({ message: "You need to enter price-desc or price-asc" });
+    }
+
+    const filters = {};
+
+    if (title) {
+      filters.product_name = regExp;
+    }
+    if (priceMin && priceMax) {
+      filters.product_price = { $gte: priceMin, $lte: priceMax };
+    } else {
+      if (priceMin) {
+        filters.product_price = { $gte: priceMin };
+      }
+      if (priceMax) {
+        filters.product_price = { $lte: priceMax };
+      }
+    }
+
+    console.log(filters);
+
+    const result = await Offer.find(filters)
+      .sort({ product_price: 1 })
+      .skip((Number(page) - 1) * 5)
+      .limit(5)
+      .select("product_name product_price -_id");
+
+    res.json(result);
+  } catch (error) {
+    res.json({ message: error.message });
+  }
 });
 
 module.exports = router;
