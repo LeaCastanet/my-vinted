@@ -167,10 +167,15 @@ router.delete("/offer/delete/:offerId", isAuthenticated, async (req, res) => {
 
 router.get("/offer/:id", async (req, res) => {
   try {
-    offerId = req.params.id;
-    const offerToFind = await Offer.findById(offerId);
+    const offerId = req.params.id;
+    const offerToFind = await Offer.findById(offerId).populate(
+      "owner",
+      "acount_id"
+    );
     res.status(200).json(offerToFind);
-  } catch (error) {}
+  } catch (error) {
+    res.json({ message: error.message });
+  }
 });
 
 router.get("/offers", async (req, res) => {
@@ -178,7 +183,9 @@ router.get("/offers", async (req, res) => {
     const { title, priceMin, priceMax, sort, page } = req.query;
     const regExp = new RegExp(title, "i");
     if (sort !== "price-desc" && sort !== "price-asc") {
-      return res.json({ message: "You need to enter price-desc or price-asc" });
+      return res
+        .status(400)
+        .json({ message: "You need to enter price-desc or price-asc" });
     }
 
     const filters = {};
@@ -187,25 +194,38 @@ router.get("/offers", async (req, res) => {
       filters.product_name = regExp;
     }
     if (priceMin && priceMax) {
-      filters.product_price = { $gte: priceMin, $lte: priceMax };
+      filters.product_price = {
+        $gte: Number(priceMin),
+        $lte: Number(priceMax),
+      };
     } else {
       if (priceMin) {
-        filters.product_price = { $gte: priceMin };
+        filters.product_price = { $gte: Number(priceMin) };
       }
       if (priceMax) {
-        filters.product_price = { $lte: priceMax };
+        filters.product_price = { $lte: Number(priceMax) };
       }
     }
 
-    console.log(filters);
+    //console.log(filters);
 
-    const result = await Offer.find(filters)
+    const limit = 5;
+    let pageRequired = 1;
+    if (page) {
+      pageRequired = Number(page);
+    }
+    const skip = (pageRequired - 1) * limit;
+
+    const offers = await Offer.find(filters)
+      .populate("owner", "acount_id")
       .sort({ product_price: 1 })
-      .skip((Number(page) - 1) * 5)
-      .limit(5)
+      .skip(skip)
+      .limit(limit)
       .select("product_name product_price -_id");
 
-    res.json(result);
+    const offersCount = await Offer.countDocuments(filters);
+
+    res.status(200).json({ count: offersCount, offers: offers });
   } catch (error) {
     res.json({ message: error.message });
   }
