@@ -2,18 +2,8 @@ const express = require("express");
 const uid2 = require("uid2"); // Package qui sert à créer des string aléatoires
 const SHA256 = require("crypto-js/sha256"); // Sert à encripter une string
 const encBase64 = require("crypto-js/enc-base64"); // Sert à transformer l'encryptage en string
-
-// Import de fileupload qui nous permet de recevoir des formdata
-const fileUpload = require("express-fileupload");
-// Import de cloudinary
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: "du5fspkg6",
-  api_key: "324493517458347",
-  api_secret: "xBcEqilqJfP8rjPV_0kOOsyiYlc",
-  secure: true,
-});
+const fileUpload = require("express-fileupload"); // Import de fileupload qui nous permet de recevoir des formdata
+const cloudinary = require("cloudinary").v2; // Import de cloudinary
 
 const convertToBase64 = (file) => {
   return `data:${file.mimetype};base64,${file.data.toString("base64")}`;

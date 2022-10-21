@@ -1,20 +1,12 @@
 const express = require("express");
+const fileUpload = require("express-fileupload"); // Import de fileupload qui nous permet de recevoir des formdata
+const cloudinary = require("cloudinary").v2; // Import de cloudinary
+const encBase64 = require("crypto-js/enc-base64");
 
 const router = express.Router();
 
 const User = require("../models/User");
 const Offer = require("../models/Offer");
-// Import de fileupload qui nous permet de recevoir des formdata
-const fileUpload = require("express-fileupload");
-// Import de cloudinary
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: "du5fspkg6",
-  api_key: "324493517458347",
-  api_secret: "xBcEqilqJfP8rjPV_0kOOsyiYlc",
-  secure: true,
-});
 
 const convertToBase64 = (file) => {
   return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
