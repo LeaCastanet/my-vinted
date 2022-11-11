@@ -59,6 +59,17 @@ router.post(
         newOffer.product_image = result;
       }
 
+      // if (Array.isArray(req.files?.pictures)) {
+      //   //ici je verifie qu'il y a bien un files et ensuite si oui, qu'il y a bien une picture
+      //   //console.log("newOffer:", newOffer);
+      //   const picturesConverted = convertToBase64(req.files.pictures);
+      //   const pictures = await cloudinary.uploader.upload(picturesConverted, {
+      //     folder: `/vinted/offers/${newOffer._id}`,
+      //   });
+
+      //   newOffer.product_pictures = pictures;
+      // }
+
       await newOffer.save();
 
       //console.log("result:", result);
@@ -94,6 +105,9 @@ router.post(
         product_image: {
           secure_url: newOffer.product_image.secure_url,
         },
+        // product_pictures: [
+        //   { secure_url: newOffer.product_pictures.secure_url },
+        // ],
       });
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -140,6 +154,18 @@ router.put("/offer/modify/:offerId", isAuthenticated, async (req, res) => {
     if (color) {
       offerToModify.product_details.color = product_color;
     }
+
+    offerToModify.markModified("product_details");
+
+    if (req.files?.picture) {
+      const result = await cloudinary.uploader.upload(
+        convertToBase64(req.files.picture, {
+          public_id: `api/vinted/offers/${offerToModify._id}/preview`,
+        })
+      );
+      offerToModify.product_image = result;
+    }
+
     await offerToModify.save();
     res.status(200).json(offerToModify);
   } catch (error) {
