@@ -48,12 +48,14 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
         salt: salt,
       });
 
-      const avatarConverted = convertToBase64(req.files.avatar);
-      const result = await cloudinary.uploader.upload(avatarConverted, {
-        folder: `/vinted/user/${newUser._id}`,
-      });
+      if (req.files.avatar) {
+        const avatarConverted = convertToBase64(req.files.avatar);
+        const result = await cloudinary.uploader.upload(avatarConverted, {
+          folder: `/vinted/user/${newUser._id}`,
+        });
 
-      newUser.account.avatar = result;
+        newUser.account.avatar = result;
+      }
 
       await newUser.save();
       // console.log(newUser);
