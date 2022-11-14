@@ -26,7 +26,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
         req.body.newsletter !== "false" &&
         req.body.newsletter !== "true")
     ) {
-      return res.status(400).json({ message: "Missing parameter" });
+      return res.status(400).json({ message: "Missing parameters" });
     }
 
     const password = req.body.password;
