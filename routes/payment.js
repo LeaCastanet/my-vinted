@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const router = require("./user");
+// const router = require("./user");
 const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
-process.env.STRIPE_API_SECRET;
 
 const isAuthenticated = require("../middlewares/isAuthenticated");
+const router = express.Router();
 
 router.post("/payment", isAuthenticated, async (req, res) => {
   console.log(req.body);

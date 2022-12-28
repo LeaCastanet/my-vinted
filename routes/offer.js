@@ -60,20 +60,35 @@ router.post(
       }
 
       // if (Array.isArray(req.files?.pictures)) {
-      //   //ici je verifie qu'il y a bien un files et ensuite si oui, qu'il y a bien une picture
-      //   //console.log("newOffer:", newOffer);
-      //   const picturesConverted = convertToBase64(req.files.pictures);
-      //   const pictures = await cloudinary.uploader.upload(picturesConverted, {
-      //     folder: `/vinted/offers/${newOffer._id}`,
-      //   });
+      //   newProduct_pictures = [];
+      //   for (let i = 0; i < product_pictures.length; i++) {
+      //     try {
+      //       const picturesConverted = convertToBase64(req.files.pictures);
+      //       const resultPictures = await cloudinary.uploader.upload(
+      //         picturesConverted,
+      //         {
+      //           folder: `/vinted/offers/${newOffer._id}`,
+      //         }
+      //       );
 
-      //   newOffer.product_pictures = pictures;
+      //       newProduct_pictures.push(resultPictures);
+      //     } catch (error) {
+      //       console.log("uploadCloudinaryError ===> ", error.message);
+      //     }
+      //   }
+
+      //   // newOffer.product_pictures = newProduct_pictures;
+
+      //   // const picturesConverted = convertToBase64(req.files.pictures);
+      //   // const pictures = await cloudinary.uploader.upload(picturesConverted, {
+      //   //   folder: `/vinted/offers/${newOffer._id}`,
+      //   // });
+
+      //   newOffer.product_pictures = newProduct_pictures;
       // }
 
       await newOffer.save();
 
-      //console.log("result:", result);
-      //console.log("secure:", newOffer);
       res.status(200).json({
         _id: newOffer._id,
         product_name: req.body.title,
